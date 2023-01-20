@@ -15,4 +15,12 @@ router.get("/", function (req, res, next) {
     .catch(next);
 });
 
+router.post("/insert", function (req, res, next) {
+  Controller.insert(req.body)
+    .then((data) => {
+      response.success(req, res, data, 200);
+    })
+    .catch(next);
+});
+
 export default router;

@@ -1,14 +1,14 @@
 //Dependencias
 
 //Modulos
-import store from "../Connection/dbposgres.js";
+// import store from "../Connection/dbposgres.js";
 import { Op, Sequelize } from "sequelize";
 
-const sentences = store();
+// const sentences = store();
 
 //Constantes
 
-export default function () {
+export default function (sentences) {
   async function LoginNegocio(data) {
     let { num_identificacion, pass, codigo } = data;
 
