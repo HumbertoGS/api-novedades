@@ -1,16 +1,22 @@
 //Dependencias
 
 //Modulos
-import store from "../Connection/dbposgres.js";
+// import store from "../Connection/dbposgres.js";
 
-const sentences = store();
+// const sentences = store();
 
 //Constantes
 
-export default function () {
+export default function (sentences) {
   async function get() {
-    return await sentences.select("db-novedades", "categoria", ["*"]);
+    return await sentences.select("db-novedades", "categoria", ["*"], {}, [
+      ["id", "ASC"],
+    ]);
   }
 
-  return { get };
+  async function insert({ nombre }) {
+    return await sentences.insert("db-novedades", "categoria", { nombre });
+  }
+
+  return { get, insert };
 }
