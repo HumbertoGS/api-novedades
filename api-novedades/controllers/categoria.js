@@ -18,5 +18,14 @@ export default function (sentences) {
     return await sentences.insert("db-novedades", "categoria", { nombre });
   }
 
-  return { get, insert };
+  async function cambiarEstado({ id, estado }) {
+    return await sentences.update(
+      "db-novedades",
+      "categoria",
+      { estado },
+      { id }
+    );
+  }
+
+  return { get, insert, cambiarEstado };
 }
