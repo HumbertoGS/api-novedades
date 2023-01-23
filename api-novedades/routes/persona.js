@@ -15,4 +15,20 @@ router.post("/buscar", function (req, res, next) {
     .catch(next);
 });
 
+router.get("/buscarEmpleado", function (req, res, next) {
+  Controller.buscarDatosEmpleados(req.body)
+    .then((data) => {
+      response.success(req, res, data, 200);
+    })
+    .catch(next);
+});
+
+router.post("/cambiarEstado", function (req, res, next) {
+  Controller.cambiarEstado(req.body)
+    .then((data) => {
+      response.success(req, res, data, 200);
+    })
+    .catch(next);
+});
+
 export default router;

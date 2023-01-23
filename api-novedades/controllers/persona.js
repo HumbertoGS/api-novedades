@@ -8,7 +8,7 @@ export default function (sentences) {
     let datos = await sentences.select(
       "db-novedades",
       "cliente",
-      ["cedula", "nombre", "apellido", "direccion", "referencia"],
+      ["cedula", "nombre", "apellido", "direccion", "referencia", "telefono"],
       {
         cedula: numIdent,
       }
@@ -21,12 +21,32 @@ export default function (sentences) {
         apellido: item.apellido,
         direccion: item.direccion ?? "",
         referencia: item.referencia ?? "",
+        telefono: item.telefono ?? "",
       };
     });
 
-    console.log(datos);
     return datos;
   }
 
-  return { buscarDatos };
+  async function buscarDatosEmpleados() {
+    return await sentences.select(
+      "db-novedades",
+      "cliente",
+      ["id", "cedula", "nombre", "apellido", "contrasena", "codigo", "estado"],
+      {
+        id_rol: 2,
+      }
+    );
+  }
+
+  async function cambiarEstado({ id, estado }) {
+    return await sentences.update(
+      "db-novedades",
+      "cliente",
+      { estado },
+      { id }
+    );
+  }
+
+  return { buscarDatos, buscarDatosEmpleados, cambiarEstado };
 }
