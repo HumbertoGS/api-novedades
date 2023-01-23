@@ -32,16 +32,41 @@ export default function (sentences) {
     );
   }
 
-  async function LoginCliente({ num_identificacion, pass }) {
-    return await sentences.select(
+  async function registroCliente(data) {
+    const existe = await sentences.select(
       "db-novedades",
       "cliente",
       ["nombre", "cedula"],
       {
-        cedula: num_identificacion,
-        contrasena: pass,
+        cedula: data.cedula,
       }
     );
+
+    if (existe.length == 0) {
+      await sentences.insert("db-novedades", "cliente", {
+        ...data,
+        id_rol: 3,
+      });
+
+      const datosLogin = await sentences.select(
+        "db-novedades",
+        "cliente",
+        ["nombre", "cedula"],
+        {
+          cedula: data.cedula,
+          id_rol: 3,
+        }
+      );
+
+      return {
+        datos: datosLogin,
+        message: "Se registro correctamente",
+      };
+    }
+    return {
+      datos: [],
+      message: "El número de cédula ya cuenta con un registro",
+    };
   }
 
   async function AccesoMenu({ cedula }) {
@@ -53,5 +78,5 @@ export default function (sentences) {
       .then((item) => (item.length !== 0 ? true : false));
   }
 
-  return { LoginNegocio, AccesoMenu };
+  return { LoginNegocio, AccesoMenu, registroCliente };
 }

@@ -1,5 +1,5 @@
 import express from "express";
-import Controllers from "../controllers/login.js";
+import Controllers from "../controllers/inicio.js";
 import store from "../connection/dbposgres.js";
 import response from "../connection/response.js";
 
@@ -7,10 +7,18 @@ import response from "../connection/response.js";
 const router = express.Router();
 const Controller = Controllers(store());
 
-router.post("/negocio", function (req, res, next) {
+router.post("/login", function (req, res, next) {
   Controller.LoginNegocio(req.body)
     .then((data) => {
       response.success(req, res, data, 200);
+    })
+    .catch(next);
+});
+
+router.post("/registro", function (req, res, next) {
+  Controller.registroCliente(req.body)
+    .then((data) => {
+      response.success(req, res, data.datos, 200, data.message);
     })
     .catch(next);
 });
