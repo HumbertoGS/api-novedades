@@ -1,9 +1,9 @@
-
 //Modulos
 import express from "express";
 
-import categoria from "./api-novedades/routes/categoria.js"
-import inicio from "./api-novedades/routes/inicio.js"
+import categoria from "./api-novedades/routes/categoria.js";
+import inicio from "./api-novedades/routes/inicio.js";
+import persona from "./api-novedades/routes/persona.js";
 
 //Constantes
 const app = express();
@@ -29,6 +29,7 @@ app.use((req, res, next) => {
 // RUTAS
 app.use("/api/categoria", categoria);
 app.use("/api/inicio", inicio);
+app.use("/api/persona", persona);
 
 app.listen(PORT, () => {
   console.log(`Server on port ${PORT}`);
