@@ -23,7 +23,7 @@ export default class cliente extends Model {
       allowNull: true
     },
     contrasena: {
-      type: DataTypes.STRING(10),
+      type: DataTypes.TEXT,
       allowNull: true
     },
     telefono: {

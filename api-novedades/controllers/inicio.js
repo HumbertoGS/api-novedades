@@ -1,4 +1,5 @@
 //Dependencias
+import bcryptjs from "bcrypt";
 
 //Modulos
 // import store from "../Connection/dbposgres.js";
@@ -14,7 +15,7 @@ export default function (sentences) {
 
     let where = {
       cedula: num_identificacion,
-      contrasena: pass,
+      // contrasena: pass,
     };
 
     if (codigo) {
@@ -24,12 +25,27 @@ export default function (sentences) {
       where.id_rol = 3;
     }
 
-    return await sentences.select(
+    const usuario = await sentences.select(
       "db-novedades",
       "cliente",
-      ["nombre", "cedula"],
+      ["nombre", "cedula", "contrasena"],
       where
     );
+
+    if (usuario.length !== 0) {
+      let isValid = await bcryptjs.compare(pass, usuario[0].contrasena);
+
+      if (!isValid) return [];
+
+      return [
+        {
+          nombre: usuario[0].nombre,
+          cedula: usuario[0].cedula,
+        },
+      ];
+    }
+
+    return [];
   }
 
   async function registroCliente(data) {
@@ -43,6 +59,10 @@ export default function (sentences) {
     );
 
     if (existe.length == 0) {
+      //encriptar contraseña
+      const salt = await bcryptjs.genSalt();
+      data.contrasena = await bcryptjs.hash(data.contrasena, salt);
+
       await sentences.insert("db-novedades", "cliente", {
         ...data,
         id_rol: 3,

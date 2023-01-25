@@ -5,14 +5,9 @@ import { Op, Sequelize } from "sequelize";
 
 export default function (sentences) {
   async function buscarDatos({ numIdent }) {
-    let datos = await sentences.select(
-      "db-novedades",
-      "cliente",
-      ["cedula", "nombre", "apellido", "direccion", "referencia", "telefono"],
-      {
-        cedula: numIdent,
-      }
-    );
+    let datos = await sentences.select("db-novedades", "cliente", ["*"], {
+      cedula: numIdent,
+    });
 
     datos = datos.map((item) => {
       return {
@@ -22,6 +17,7 @@ export default function (sentences) {
         direccion: item.direccion ?? "",
         referencia: item.referencia ?? "",
         telefono: item.telefono ?? "",
+        correo: item.correo ?? "",
       };
     });
 
