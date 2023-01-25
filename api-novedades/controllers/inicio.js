@@ -18,12 +18,12 @@ export default function (sentences) {
       // contrasena: pass,
     };
 
-    if (codigo) {
-      where.codigo = codigo;
-      where.id_rol = { [Op.in]: ["1", "2"] };
-    } else {
-      where.id_rol = 3;
-    }
+    // if (codigo) {
+    //   where.codigo = codigo;
+    //   where.id_rol = { [Op.in]: ["1", "2"] };
+    // } else {
+    //   where.id_rol = 3;
+    // }
 
     const usuario = await sentences.select(
       "db-novedades",
