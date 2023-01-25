@@ -11,6 +11,7 @@ export default function (sentences) {
 
     datos = datos.map((item) => {
       return {
+        id: item.id,
         cedula: item.cedula,
         nombre: item.nombre,
         apellido: item.apellido,
@@ -22,6 +23,24 @@ export default function (sentences) {
     });
 
     return datos;
+  }
+
+  async function actualizarDatos(data) {
+    const id = data.id;
+
+    delete data.id;
+
+    const update = await sentences.update(
+      "db-novedades",
+      "cliente",
+      { ...data },
+      {
+        id,
+      }
+    );
+
+    if (update[0] === 1) return buscarDatos({ numIdent: data.cedula });
+    return [];
   }
 
   async function buscarDatosEmpleados() {
@@ -44,5 +63,5 @@ export default function (sentences) {
     );
   }
 
-  return { buscarDatos, buscarDatosEmpleados, cambiarEstado };
+  return { buscarDatos, actualizarDatos, buscarDatosEmpleados, cambiarEstado };
 }

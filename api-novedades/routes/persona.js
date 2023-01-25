@@ -15,6 +15,14 @@ router.post("/buscar", function (req, res, next) {
     .catch(next);
 });
 
+router.post("/actualizar", function (req, res, next) {
+  Controller.actualizarDatos(req.body)
+    .then((data) => {
+      response.success(req, res, data, 200);
+    })
+    .catch(next);
+});
+
 router.get("/buscarEmpleado", function (req, res, next) {
   Controller.buscarDatosEmpleados(req.body)
     .then((data) => {
