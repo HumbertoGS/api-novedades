@@ -11,19 +11,11 @@ import { Op, Sequelize } from "sequelize";
 
 export default function (sentences) {
   async function LoginNegocio(data) {
-    let { num_identificacion, pass, codigo } = data;
+    let { num_identificacion, pass } = data;
 
     let where = {
       cedula: num_identificacion,
-      // contrasena: pass,
     };
-
-    // if (codigo) {
-    //   where.codigo = codigo;
-    //   where.id_rol = { [Op.in]: ["1", "2"] };
-    // } else {
-    //   where.id_rol = 3;
-    // }
 
     const usuario = await sentences.select(
       "db-novedades",
@@ -41,7 +33,7 @@ export default function (sentences) {
         {
           nombre: usuario[0].nombre,
           cedula: usuario[0].cedula,
-          permisos: usuario[0].id_rol
+          permisos: usuario[0].id_rol,
         },
       ];
     }
@@ -59,7 +51,7 @@ export default function (sentences) {
       }
     );
 
-    if (existe.length == 0) {
+    if (existe.length === 0) {
       //encriptar contraseña
       const salt = await bcryptjs.genSalt();
       data.contrasena = await bcryptjs.hash(data.contrasena, salt);
@@ -72,10 +64,9 @@ export default function (sentences) {
       const datosLogin = await sentences.select(
         "db-novedades",
         "cliente",
-        ["nombre", "cedula"],
+        ["nombre", "cedula", Sequelize.literal("id_rol as permisos")],
         {
           cedula: data.cedula,
-          id_rol: 3,
         }
       );
 

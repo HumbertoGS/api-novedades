@@ -44,11 +44,11 @@ export default function (sentences) {
     return [];
   }
 
-  async function buscarDatosEmpleados() {
+  async function buscarDatosEmpleados(data) {
     return await sentences.select(
       "db-novedades",
       "cliente",
-      ["id", "cedula", "nombre", "apellido", "contrasena", "codigo", "estado"],
+      ["id", "cedula", "nombre", "apellido", "estado"],
       {
         id_rol: 2,
       }
