@@ -28,7 +28,7 @@ export default function (sentences) {
     const usuario = await sentences.select(
       "db-novedades",
       "cliente",
-      ["nombre", "cedula", "contrasena"],
+      ["nombre", "cedula", "contrasena", "id_rol"],
       where
     );
 
@@ -41,6 +41,7 @@ export default function (sentences) {
         {
           nombre: usuario[0].nombre,
           cedula: usuario[0].cedula,
+          permisos: usuario[0].id_rol
         },
       ];
     }

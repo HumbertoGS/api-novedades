@@ -19,6 +19,7 @@ export default function (sentences) {
         referencia: item.referencia ?? "",
         telefono: item.telefono ?? "",
         correo: item.correo ?? "",
+        id_rol: item.id_rol,
       };
     });
 
