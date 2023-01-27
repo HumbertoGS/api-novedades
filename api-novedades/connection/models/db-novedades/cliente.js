@@ -15,11 +15,11 @@ export default class cliente extends Model {
       allowNull: true
     },
     nombre: {
-      type: DataTypes.STRING(10),
+      type: DataTypes.STRING(30),
       allowNull: true
     },
     apellido: {
-      type: DataTypes.STRING(10),
+      type: DataTypes.STRING(30),
       allowNull: true
     },
     contrasena: {

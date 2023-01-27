@@ -1,6 +1,7 @@
 //Modulos
 import express from "express";
 
+import producto from "./api-novedades/routes/producto.js";
 import categoria from "./api-novedades/routes/categoria.js";
 import inicio from "./api-novedades/routes/inicio.js";
 import persona from "./api-novedades/routes/persona.js";
@@ -27,6 +28,7 @@ app.use((req, res, next) => {
 });
 
 // RUTAS
+app.use("/api/producto", producto);
 app.use("/api/categoria", categoria);
 app.use("/api/inicio", inicio);
 app.use("/api/persona", persona);
