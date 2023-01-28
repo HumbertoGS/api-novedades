@@ -10,10 +10,6 @@ export default class producto extends Model {
       allowNull: false,
       primaryKey: true
     },
-    codigo: {
-      type: DataTypes.INTEGER,
-      allowNull: true
-    },
     nombre: {
       type: DataTypes.STRING(30),
       allowNull: true
@@ -50,7 +46,19 @@ export default class producto extends Model {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true
-    }
+    },
+    tamano_original: {
+      type: DataTypes.STRING(15),
+      allowNull: false
+    },
+    tamano_conversion: {
+      type: DataTypes.STRING(15),
+      allowNull: false
+    },
+    nombre_imagen: {
+      type: DataTypes.STRING(30),
+      allowNull: false
+    },
   }, {
     sequelize,
     tableName: 'producto',

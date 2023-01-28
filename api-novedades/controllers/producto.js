@@ -1,4 +1,5 @@
 //Dependencias
+import { Sequelize } from "sequelize";
 import sharp from "sharp";
 
 // const sentences = store();
@@ -17,13 +18,30 @@ export default function (sentences) {
   }
 
   async function get() {
-    return await sentences.select("db-novedades", "producto", ["*"], {}, [
-      ["id", "ASC"],
-    ]);
+    return await sentences.selectJoin(
+      "db-novedades",
+      "producto",
+      ["*"],
+      {},
+      [
+        {
+          name: "categoria",
+          as: "categoria_categorium",
+          required: true,
+          select: [
+            Sequelize.literal(
+              "categoria_categorium.nombre as nombre_categoria"
+            ),
+          ],
+          where: { estado: true },
+        },
+      ],
+      true,
+      [["id", "ASC"]]
+    );
   }
 
   async function insert(data) {
-
     const MyImage = data.file.buffer;
     let extension = data.file.mimetype.split("/");
     extension = extension[1];
@@ -40,19 +58,29 @@ export default function (sentences) {
 
     const datos = {
       ...datosForm,
-      nombre_archivo: `${nameFile}.${extension}`,
+      nombre_imagen: `${nameFile}.${extension}`,
       nombre_original: data.file.originalname,
       tipo: extension,
       tamano_original: (data.file.size / 1000).toString() + "KB",
       tamano_conversion: (imageData.size / 1000).toString() + "KB",
-      activo: true,
       imagen: `data:image/png;base64,${ImageBuf.toString("base64")}`,
     };
+
+    if (datos.nombre === "") {
+      const [{ nombre }] = await sentences.select(
+        "db-novedades",
+        "categoria",
+        ["nombre"],
+        { id: datos.categoria }
+      );
+
+      datos.nombre = nombre;
+    }
 
     // console.log(`data:image/png;base64,${ImageBuf.toString("base64")}`);
 
     console.log(datos);
-    // return await sentences.insert("db-novedades", "producto", { nombre });
+    return await sentences.insert("db-novedades", "producto", datos);
   }
 
   async function cambiarEstado({ id, estado }) {
