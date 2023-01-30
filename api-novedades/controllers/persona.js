@@ -55,6 +55,15 @@ export default function (sentences) {
     );
   }
 
+  async function registrarEmpleado({ id }) {
+    return await sentences.update(
+      "db-novedades",
+      "cliente",
+      { id_rol: 2 },
+      { id }
+    );
+  }
+
   async function cambiarEstado({ id, estado }) {
     return await sentences.update(
       "db-novedades",
@@ -64,5 +73,11 @@ export default function (sentences) {
     );
   }
 
-  return { buscarDatos, actualizarDatos, buscarDatosEmpleados, cambiarEstado };
+  return {
+    buscarDatos,
+    actualizarDatos,
+    buscarDatosEmpleados,
+    registrarEmpleado,
+    cambiarEstado,
+  };
 }
