@@ -15,6 +15,7 @@ export default function (sentences) {
 
     let where = {
       cedula: num_identificacion,
+      estado: true
     };
 
     const usuario = await sentences.select(
