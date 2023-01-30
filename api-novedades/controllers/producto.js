@@ -17,12 +17,16 @@ export default function (sentences) {
     return uuid;
   }
 
-  async function get() {
+  async function get({ stock }) {
+    let filtro = {};
+
+    if (stock) filtro.stock = stock;
+
     return await sentences.selectJoin(
       "db-novedades",
       "producto",
       ["*"],
-      {},
+      filtro,
       [
         {
           name: "categoria",
@@ -33,7 +37,9 @@ export default function (sentences) {
               "categoria_categorium.nombre as nombre_categoria"
             ),
           ],
-          where: { estado: true },
+          where: {
+            // estado: true
+          },
         },
       ],
       true,
@@ -87,7 +93,7 @@ export default function (sentences) {
     return await sentences.update(
       "db-novedades",
       "producto",
-      { estado },
+      { stock: estado },
       { id }
     );
   }
