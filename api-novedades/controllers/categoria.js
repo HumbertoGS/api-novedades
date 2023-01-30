@@ -8,8 +8,10 @@
 //Constantes
 
 export default function (sentences) {
-  async function get() {
-    return await sentences.select("db-novedades", "categoria", ["*"], {}, [
+  async function get({ estado }) {
+    let filtro = {};
+    if (estado) filtro.estado = estado;
+    return await sentences.select("db-novedades", "categoria", ["*"], filtro, [
       ["id", "ASC"],
     ]);
   }
