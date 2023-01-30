@@ -8,7 +8,7 @@ const router = express.Router();
 const Controller = Controllers(store());
 
 router.get("/", function (req, res, next) {
-  Controller.get()
+  Controller.get(req.query)
     .then((data) => {
       response.success(req, res, data, 200);
     })

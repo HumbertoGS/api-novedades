@@ -12,7 +12,7 @@ const Controller = Controllers(store());
 const upload = multer({ storage: multer.memoryStorage() });
 
 router.get("/", function (req, res, next) {
-  Controller.get()
+  Controller.get(req.query)
     .then((data) => {
       response.success(req, res, data, 200);
     })
