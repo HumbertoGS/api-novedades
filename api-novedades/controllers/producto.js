@@ -48,29 +48,17 @@ export default function (sentences) {
   }
 
   async function insert(data) {
-    const MyImage = data.file.buffer;
-    let extension = data.file.mimetype.split("/");
-    extension = extension[1];
-
-    const ImageBuf = await sharp(MyImage)
-      .toFormat(extension, { quality: 70 })
-      .toBuffer();
-
-    const imageData = await sharp(ImageBuf).metadata();
-
-    const nameFile = generateUUID();
+    let imageData;
+    let nameFile;
+    let id = null;
 
     const datosForm = JSON.parse(data.body.data);
-
-    const datos = {
-      ...datosForm,
-      nombre_imagen: `${nameFile}.${extension}`,
-      nombre_original: data.file.originalname,
-      tipo: extension,
-      tamano_original: (data.file.size / 1000).toString() + "KB",
-      tamano_conversion: (imageData.size / 1000).toString() + "KB",
-      imagen: `data:image/png;base64,${ImageBuf.toString("base64")}`,
-    };
+    let datos = datosForm;
+    
+    if (datos.id) {
+      id = datos.id;
+      delete datos.id;
+    }
 
     if (datos.nombre === "") {
       const [{ nombre }] = await sentences.select(
@@ -83,10 +71,41 @@ export default function (sentences) {
       datos.nombre = nombre;
     }
 
-    // console.log(`data:image/png;base64,${ImageBuf.toString("base64")}`);
+    if (data.file) {
+      const MyImage = data.file.buffer;
+      let extension = data.file.mimetype.split("/");
+      extension = extension[1];
+
+      const ImageBuf = await sharp(MyImage)
+        .toFormat(extension, { quality: 70 })
+        .toBuffer();
+
+      imageData = await sharp(ImageBuf).metadata();
+
+      nameFile = generateUUID();
+
+      datos = {
+        ...datos,
+        nombre_imagen: `${nameFile}.${extension}`,
+        nombre_original: data.file.originalname,
+        tipo: extension,
+        tamano_original: (data.file.size / 1000).toString() + "KB",
+        tamano_conversion: (imageData.size / 1000).toString() + "KB",
+        imagen: `data:image/png;base64,${ImageBuf.toString("base64")}`,
+      };
+    }
 
     console.log(datos);
-    return await sentences.insert("db-novedades", "producto", datos);
+    console.log(id);
+
+    if (id) {
+      //SE ACTUALIZA
+      return await sentences.update("db-novedades", "producto", datos, { id });
+    } else {
+      //SE INSERTA
+      return await sentences.insert("db-novedades", "producto", datos);
+      console.log(`data:image/png;base64,${ImageBuf.toString("base64")}`);
+    }
   }
 
   async function cambiarEstado({ id, estado }) {
