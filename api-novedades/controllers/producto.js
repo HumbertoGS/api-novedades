@@ -17,12 +17,26 @@ export default function (sentences) {
     return uuid;
   }
 
+  function validarFechaEnRango(inicio, fin, fecha) {
+    return (
+      inicio.valueOf() <= fecha.valueOf() && fecha.valueOf() <= fin.valueOf()
+    );
+  }
+
+  function restarDias(fecha) {
+    fecha.setDate(fecha.getDate() + -3);
+    return fecha;
+  }
+
   async function get({ stock }) {
+    const fechaFin = new Date();
+    const fechaInicio = restarDias(new Date());
+
     let filtro = {};
 
     if (stock) filtro.stock = stock;
 
-    return await sentences.selectJoin(
+    let datos = await sentences.selectJoin(
       "db-novedades",
       "producto",
       ["*"],
@@ -43,8 +57,21 @@ export default function (sentences) {
         },
       ],
       true,
-      [["id", "ASC"]]
+      [["id", "DESC"]]
     );
+
+    datos = datos.map((item) => {
+      return {
+        ...item,
+        newProducto: validarFechaEnRango(
+          fechaInicio,
+          fechaFin.getTime(),
+          new Date(item.fecha_registro).getTime()
+        ),
+      };
+    });
+
+    return datos;
   }
 
   async function insert(data) {
@@ -54,7 +81,7 @@ export default function (sentences) {
 
     const datosForm = JSON.parse(data.body.data);
     let datos = datosForm;
-    
+
     if (datos.id) {
       id = datos.id;
       delete datos.id;
@@ -94,10 +121,7 @@ export default function (sentences) {
         imagen: `data:image/png;base64,${ImageBuf.toString("base64")}`,
       };
     }
-
-    console.log(datos);
-    console.log(id);
-
+    
     if (id) {
       //SE ACTUALIZA
       return await sentences.update("db-novedades", "producto", datos, { id });
