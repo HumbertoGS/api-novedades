@@ -24,7 +24,7 @@ export default function (sentences) {
   }
 
   function restarDias(fecha) {
-    fecha.setDate(fecha.getDate() + -3);
+    fecha.setDate(fecha.getDate() + -7);
     return fecha;
   }
 
