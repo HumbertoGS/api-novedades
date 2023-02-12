@@ -5,6 +5,7 @@ import producto from "./api-novedades/routes/producto.js";
 import categoria from "./api-novedades/routes/categoria.js";
 import inicio from "./api-novedades/routes/inicio.js";
 import persona from "./api-novedades/routes/persona.js";
+import pedido from "./api-novedades/routes/pedido.js";
 
 //Constantes
 const app = express();
@@ -29,6 +30,7 @@ app.use((req, res, next) => {
 
 // RUTAS
 app.use("/api/producto", producto);
+app.use("/api/pedido", pedido);
 app.use("/api/categoria", categoria);
 app.use("/api/inicio", inicio);
 app.use("/api/persona", persona);
