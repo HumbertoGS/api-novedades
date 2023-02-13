@@ -1,5 +1,5 @@
 //Dependencias
-import { Sequelize } from "sequelize";
+import { Sequelize, Op } from "sequelize";
 import sharp from "sharp";
 
 // const sentences = store();
@@ -121,7 +121,7 @@ export default function (sentences) {
         imagen: `data:image/png;base64,${ImageBuf.toString("base64")}`,
       };
     }
-    
+
     if (id) {
       //SE ACTUALIZA
       return await sentences.update("db-novedades", "producto", datos, { id });
@@ -141,5 +141,38 @@ export default function (sentences) {
     );
   }
 
-  return { get, insert, cambiarEstado };
+  async function inventario({ fechaDesde, fechaHasta }) {
+    let filtro = {};
+
+    if (fechaDesde && fechaHasta)
+      filtro.fecha_registro = { [Op.between]: [fechaDesde, fechaHasta] };
+
+    const inventario = await sentences.selectJoin(
+      "db-novedades",
+      "producto",
+      ["codigo", "nombre", "precio", "categoria", "cantidad", "stock"],
+      filtro,
+      [
+        {
+          name: "categoria",
+          as: "categoria_categorium",
+          required: true,
+          select: [
+            Sequelize.literal(
+              "categoria_categorium.nombre as nombre_categoria"
+            ),
+          ],
+          where: {
+            // estado: true
+          },
+        },
+      ],
+      true,
+      [["id", "DESC"]]
+    );
+
+    return inventario;
+  }
+
+  return { get, insert, cambiarEstado, inventario };
 }

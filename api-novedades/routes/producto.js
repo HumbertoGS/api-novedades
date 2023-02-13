@@ -27,6 +27,14 @@ router.post("/insert", upload.single("imagen"), function (req, res, next) {
     .catch(next);
 });
 
+router.post("/inventario", function (req, res, next) {
+  Controller.inventario(req.body)
+    .then((data) => {
+      response.success(req, res, data, 200);
+    })
+    .catch(next);
+});
+
 router.post("/cambiarEstado", function (req, res, next) {
   Controller.cambiarEstado(req.body)
     .then((data) => {
