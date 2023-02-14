@@ -19,8 +19,9 @@ router.get("/", function (req, res, next) {
     .catch(next);
 });
 
-router.post("/insert", upload.single("imagen"), function (req, res, next) {
-  Controller.insert(req)
+// router.post("/insert", upload.single("imagen"), function (req, res, next) {
+router.post("/insert", function (req, res, next) {
+  Controller.insert(req.body)
     .then((data) => {
       response.success(req, res, data, 200);
     })

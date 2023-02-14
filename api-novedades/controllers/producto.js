@@ -28,6 +28,23 @@ export default function (sentences) {
     return fecha;
   }
 
+  function getBase64Size(base64String) {
+    const padding = base64String.endsWith("==")
+      ? 2
+      : base64String.endsWith("=")
+      ? 1
+      : 0;
+    const byteLength = (base64String.length / 4) * 3 - padding;
+    return byteLength;
+  }
+
+  function addZeros(str) {
+    const desiredLength = 5;
+    const currentLength = str.length;
+    const zerosToAdd = desiredLength - currentLength;
+    return "0".repeat(zerosToAdd) + str;
+  }
+
   async function get({ stock }) {
     const fechaFin = new Date();
     const fechaInicio = restarDias(new Date());
@@ -74,13 +91,11 @@ export default function (sentences) {
     return datos;
   }
 
-  async function insert(data) {
+  async function insert(datos) {
     let imageData;
     let nameFile;
     let id = null;
-
-    const datosForm = JSON.parse(data.body.data);
-    let datos = datosForm;
+    let codigo = "1";
 
     if (datos.id) {
       id = datos.id;
@@ -98,29 +113,53 @@ export default function (sentences) {
       datos.nombre = nombre;
     }
 
-    if (data.file) {
-      const MyImage = data.file.buffer;
-      let extension = data.file.mimetype.split("/");
-      extension = extension[1];
+    if (!datos.codigo) {
+      codigo = await sentences.rawQuery(
+        "select id from producto order by id desc limit 1"
+      );
+      codigo = addZeros((codigo[0].id + 1).toString());
+    }
+
+    if (datos.imagen) {
+      const separacion = datos.imagen.split(",");
+      let extension = "jpg";
+
+      if (separacion.length === 2) {
+        const ext = separacion[0].split("/")[1].split(";")[0];
+        if (ext === "png" || ext === "jpg" || ext === "gif") {
+          extension = ext;
+        }
+      }
+
+      const base64Data = separacion[separacion.length - 1];
+      const MyImage = Buffer.from(base64Data, "base64");
+
+      // const MyImage = data.file.buffer;
+      // let extension = data.file.mimetype.split("/");
+      // extension = extension[1];
 
       const ImageBuf = await sharp(MyImage)
         .toFormat(extension, { quality: 70 })
         .toBuffer();
 
-      imageData = await sharp(ImageBuf).metadata();
+      // imageData = await sharp(ImageBuf).metadata();
 
       nameFile = generateUUID();
 
       datos = {
         ...datos,
         nombre_imagen: `${nameFile}.${extension}`,
-        nombre_original: data.file.originalname,
-        tipo: extension,
-        tamano_original: (data.file.size / 1000).toString() + "KB",
-        tamano_conversion: (imageData.size / 1000).toString() + "KB",
+        tamano_original: (getBase64Size(base64Data) / 1000).toString() + "KB",
+        tamano_conversion: (ImageBuf.length / 1000).toString() + "KB",
         imagen: `data:image/png;base64,${ImageBuf.toString("base64")}`,
       };
     }
+
+    datos = {
+      ...datos,
+      codigo,
+      precio: Number(datos.precio),
+    };
 
     if (id) {
       //SE ACTUALIZA
@@ -128,6 +167,7 @@ export default function (sentences) {
     } else {
       //SE INSERTA
       return await sentences.insert("db-novedades", "producto", datos);
+      return;
       console.log(`data:image/png;base64,${ImageBuf.toString("base64")}`);
     }
   }
