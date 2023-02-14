@@ -54,5 +54,13 @@ export default function (sentences) {
     };
   }
 
-  return { insert };
+  async function getPedido() {
+    return;
+  }
+
+  async function getPedidoDetalle(data) {
+    return;
+  }
+
+  return { insert, getPedido, getPedidoDetalle };
 }

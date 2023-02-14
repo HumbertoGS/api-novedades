@@ -32,6 +32,15 @@ export default class resumen_orden extends Model {
       type: DataTypes.DATE,
       allowNull: true,
       defaultValue: Sequelize.Sequelize.literal('CURRENT_TIMESTAMP')
+    },
+    id_estado: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      defaultValue: 1,
+      references: {
+        model: 'estado',
+        key: 'id'
+      }
     }
   }, {
     sequelize,
