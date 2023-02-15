@@ -40,4 +40,12 @@ router.post("/detalle/cambiarEstado", function (req, res, next) {
     .catch(next);
 });
 
+router.post("/cambiarEstado", function (req, res, next) {
+  Controller.cambiarEstadoPedido(req.body)
+    .then((data) => {
+      response.success(req, res, data, 200);
+    })
+    .catch(next);
+});
+
 export default router;

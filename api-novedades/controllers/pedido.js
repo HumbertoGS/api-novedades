@@ -89,7 +89,7 @@ export default function (sentences) {
         },
       ],
       true,
-      [["id", "DESC"]]
+      [["fecha_creacion", "DESC"]]
     );
 
     let repetido = 0;
@@ -172,5 +172,22 @@ export default function (sentences) {
     return await sentences.update("db-novedades", "orden", { estado }, { id });
   }
 
-  return { insert, getPedido, getPedidoDetalle, cambiarEstadoPedidoDetalle };
+  async function cambiarEstadoPedido(data) {
+    let { id, transferencia, id_estado } = data;
+
+    return await sentences.update(
+      "db-novedades",
+      "resumen_orden",
+      { id_estado, transferencia },
+      { id }
+    );
+  }
+
+  return {
+    insert,
+    getPedido,
+    getPedidoDetalle,
+    cambiarEstadoPedidoDetalle,
+    cambiarEstadoPedido,
+  };
 }
