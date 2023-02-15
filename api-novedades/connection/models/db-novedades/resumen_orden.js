@@ -23,7 +23,7 @@ export default class resumen_orden extends Model {
       type: DataTypes.DOUBLE,
       allowNull: true
     },
-    estado_pedido: {
+    estado: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true
@@ -41,6 +41,14 @@ export default class resumen_orden extends Model {
         model: 'estado',
         key: 'id'
       }
+    },
+    total_pedido: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    transferencia: {
+      type: DataTypes.STRING(30),
+      allowNull: true
     }
   }, {
     sequelize,
