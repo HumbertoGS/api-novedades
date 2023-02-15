@@ -26,7 +26,7 @@ export default function initModels(sequelize) {
   orden.belongsTo(producto, { as: "id_producto_producto", foreignKey: "id_producto"});
   producto.hasMany(orden, { as: "ordens", foreignKey: "id_producto"});
   orden.belongsTo(resumen_orden, { as: "num_venta_resumen_orden", foreignKey: "num_venta"});
-  resumen_orden.hasMany(orden, { as: "ordens", foreignKey: "num_venta"});
+  resumen_orden.hasMany(orden, { as: "ordens", foreignKey: "num_venta", sourceKey: "num_venta"});
   cliente.belongsTo(rol, { as: "id_rol_rol", foreignKey: "id_rol"});
   rol.hasMany(cliente, { as: "clientes", foreignKey: "id_rol"});
 
