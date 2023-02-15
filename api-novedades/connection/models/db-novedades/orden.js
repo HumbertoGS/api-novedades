@@ -42,7 +42,7 @@ export default class orden extends Model {
       type: DataTypes.DOUBLE,
       allowNull: true
     },
-    estado_pedido: {
+    estado: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true
