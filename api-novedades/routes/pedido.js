@@ -24,6 +24,22 @@ router.get("/", function (req, res, next) {
     .catch(next);
 });
 
+router.post("/buscar", function (req, res, next) {
+  Controller.buscarPedido(req.body)
+    .then((data) => {
+      response.success(req, res, data, 200);
+    })
+    .catch(next);
+});
+
+router.post("/cambiarEstado", function (req, res, next) {
+  Controller.cambiarEstadoPedido(req.body)
+    .then((data) => {
+      response.success(req, res, data, 200);
+    })
+    .catch(next);
+});
+
 router.post("/detalle", function (req, res, next) {
   Controller.getPedidoDetalle(req.body)
     .then((data) => {
@@ -34,14 +50,6 @@ router.post("/detalle", function (req, res, next) {
 
 router.post("/detalle/cambiarEstado", function (req, res, next) {
   Controller.cambiarEstadoPedidoDetalle(req.body)
-    .then((data) => {
-      response.success(req, res, data, 200);
-    })
-    .catch(next);
-});
-
-router.post("/cambiarEstado", function (req, res, next) {
-  Controller.cambiarEstadoPedido(req.body)
     .then((data) => {
       response.success(req, res, data, 200);
     })

@@ -105,6 +105,66 @@ export default function (sentences) {
           transferencia: item.transferencia,
           status: item.id_estado,
           estado: item.estado,
+          cambio_estado: item.estado,
+          id_cliente: item["ordens.id_cliente"],
+          num_identificacion: item["ordens.id_cliente_cliente.cedula"],
+          nombre_completo: `${item["ordens.id_cliente_cliente.apellido"]} ${item["ordens.id_cliente_cliente.nombre"]}`,
+        });
+      }
+      repetido = item.num_venta;
+    });
+
+    return datos;
+  }
+
+  async function buscarPedido({ status, num_pedido, num_ident }) {
+    let filtroPersona = num_ident ? { cedula: num_ident.trim() } : {};
+    let filtroPedido = num_pedido ? { num_venta: Number(num_pedido) } : {};
+
+    const pedido = await sentences.selectJoin(
+      "db-novedades",
+      "resumen_orden",
+      ["*"],
+      {
+        id_estado: Number(status),
+      },
+      [
+        {
+          name: "orden",
+          as: "ordens",
+          required: true,
+          sourceKey: "num_venta",
+          select: ["id_cliente", "num_venta"],
+          where: filtroPedido,
+          include: [
+            {
+              name: "cliente",
+              as: "id_cliente_cliente",
+              required: true,
+              select: ["id", "cedula", "nombre", "apellido"],
+              where: filtroPersona,
+            },
+          ],
+        },
+      ],
+      true,
+      [["fecha_creacion", "DESC"]]
+    );
+
+    let repetido = 0;
+
+    let datos = [];
+    pedido.map((item) => {
+      if (repetido !== item.num_venta) {
+        datos.push({
+          id: item.id,
+          num_pedido: item.num_venta,
+          num_producto: item.total_pedido,
+          total: "$" + item.total,
+          transferencia: item.transferencia,
+          status: item.id_estado,
+          estado: item.estado,
+          cambio_estado: item.estado,
           id_cliente: item["ordens.id_cliente"],
           num_identificacion: item["ordens.id_cliente_cliente.cedula"],
           nombre_completo: `${item["ordens.id_cliente_cliente.apellido"]} ${item["ordens.id_cliente_cliente.nombre"]}`,
@@ -186,6 +246,7 @@ export default function (sentences) {
   return {
     insert,
     getPedido,
+    buscarPedido,
     getPedidoDetalle,
     cambiarEstadoPedidoDetalle,
     cambiarEstadoPedido,
