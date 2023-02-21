@@ -12,10 +12,14 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 
 //middlewares
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-// app.use(cors());
-
+app.use(express.json({ limit: "500mb" }));
+app.use(
+  express.urlencoded({
+    limit: "500mb",
+    extended: true,
+    parameterLimit: 50000,
+  })
+);
 // Configurar cabeceras y cors
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
