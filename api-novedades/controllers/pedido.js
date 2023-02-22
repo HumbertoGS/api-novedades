@@ -164,6 +164,7 @@ export default function (sentences) {
           transferencia: item.transferencia,
           status: item.id_estado,
           estado: item.estado,
+          fecha_registro: item.fecha_creacion.toLocaleDateString(),
           cambio_estado: item.estado,
           id_cliente: item["ordens.id_cliente"],
           num_identificacion: item["ordens.id_cliente_cliente.cedula"],
