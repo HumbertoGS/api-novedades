@@ -10,4 +10,16 @@ export default {
       mensaje: message,
     });
   },
+
+  error: function (req, res, datos, status, message = "") {
+    let statusCode = status || 500;
+    let statusMessage = datos || "Internal server error";
+
+    res.status(statusCode).send({
+      error: true,
+      codigo: statusCode,
+      datos: null,
+      mensaje: statusMessage,
+    });
+  },
 };

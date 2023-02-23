@@ -2,6 +2,7 @@
 
 //Modulos
 import { Op, Sequelize } from "sequelize";
+import { error } from "../connection/error.js";
 
 export default function (sentences) {
   async function buscarDatos({ numIdent }) {
@@ -57,14 +58,14 @@ export default function (sentences) {
 
   async function registrarEmpleado({ id }) {
     if (id === 1)
-      throw Error("Este usuario no puede registrarse como empleado");
+      throw error("Este usuario no puede registrarse como empleado");
 
     const existe = await sentences.select("db-novedades", "cliente", ["id"], {
       id_rol: 2,
       id,
     });
 
-    if (existe.length !== 0) throw Error("Ya ha sido agregado");
+    if (existe.length !== 0) throw error("Usuario ya ha sido agregado", 400);
 
     return await sentences.update(
       "db-novedades",

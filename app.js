@@ -1,6 +1,8 @@
 //Modulos
 import express from "express";
 
+import { errors } from "./api-novedades/connection/error.js";
+
 import producto from "./api-novedades/routes/producto.js";
 import categoria from "./api-novedades/routes/categoria.js";
 import inicio from "./api-novedades/routes/inicio.js";
@@ -38,6 +40,8 @@ app.use("/api/pedido", pedido);
 app.use("/api/categoria", categoria);
 app.use("/api/inicio", inicio);
 app.use("/api/persona", persona);
+
+app.use(errors);
 
 app.listen(PORT, () => {
   console.log(`Server on port ${PORT}`);
