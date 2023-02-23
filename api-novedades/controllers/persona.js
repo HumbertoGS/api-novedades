@@ -56,6 +56,16 @@ export default function (sentences) {
   }
 
   async function registrarEmpleado({ id }) {
+    if (id === 1)
+      throw Error("Este usuario no puede registrarse como empleado");
+
+    const existe = await sentences.select("db-novedades", "cliente", ["id"], {
+      id_rol: 2,
+      id,
+    });
+
+    if (existe.length !== 0) throw Error("Ya ha sido agregado");
+
     return await sentences.update(
       "db-novedades",
       "cliente",
