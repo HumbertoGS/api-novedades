@@ -2,8 +2,8 @@
 import bcryptjs from "bcrypt";
 
 //Modulos
-// import store from "../Connection/dbposgres.js";
 import { Op, Sequelize } from "sequelize";
+import { error } from "../connection/error.js";
 
 // const sentences = store();
 
@@ -15,7 +15,7 @@ export default function (sentences) {
 
     let where = {
       cedula: num_identificacion,
-      estado: true
+      estado: true,
     };
 
     const usuario = await sentences.select(
@@ -52,33 +52,32 @@ export default function (sentences) {
       }
     );
 
-    if (existe.length === 0) {
-      //encriptar contraseña
-      const salt = await bcryptjs.genSalt();
-      data.contrasena = await bcryptjs.hash(data.contrasena, salt);
+    console.log(existe)
 
-      await sentences.insert("db-novedades", "cliente", {
-        ...data,
-        id_rol: 3,
-      });
+    if (existe.length !== 0)
+      throw error("El número de cédula ya cuenta con un registro");
 
-      const datosLogin = await sentences.select(
-        "db-novedades",
-        "cliente",
-        ["nombre", "cedula", Sequelize.literal("id_rol as permisos")],
-        {
-          cedula: data.cedula,
-        }
-      );
+    //encriptar contraseña
+    const salt = await bcryptjs.genSalt();
+    data.contrasena = await bcryptjs.hash(data.contrasena, salt);
 
-      return {
-        datos: datosLogin,
-        message: "Se registro correctamente",
-      };
-    }
+    await sentences.insert("db-novedades", "cliente", {
+      ...data,
+      id_rol: 3,
+    });
+
+    const datosLogin = await sentences.select(
+      "db-novedades",
+      "cliente",
+      ["nombre", "cedula", Sequelize.literal("id_rol as permisos")],
+      {
+        cedula: data.cedula,
+      }
+    );
+
     return {
-      datos: [],
-      message: "El número de cédula ya cuenta con un registro",
+      datos: datosLogin,
+      message: "Se registro correctamente",
     };
   }
 
