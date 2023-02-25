@@ -68,6 +68,10 @@ export default class producto extends Model {
       type: DataTypes.DATEONLY,
       allowNull: true,
       defaultValue: Sequelize.Sequelize.literal('CURRENT_TIMESTAMP')
+    },
+    fecha_modificacion: {
+      type: DataTypes.DATEONLY,
+      allowNull: true
     }
   }, {
     sequelize,

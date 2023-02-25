@@ -22,7 +22,7 @@ export default class orden extends Model {
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
-        model: 'cliente',
+        model: 'persona',
         key: 'id'
       }
     },

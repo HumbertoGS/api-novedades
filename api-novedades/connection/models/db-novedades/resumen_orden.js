@@ -44,11 +44,19 @@ export default class resumen_orden extends Model {
     },
     total_pedido: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false
     },
     transferencia: {
       type: DataTypes.STRING(30),
       allowNull: true
+    },
+    persona_registro: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'persona',
+        key: 'id'
+      }
     }
   }, {
     sequelize,
