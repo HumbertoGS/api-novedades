@@ -190,7 +190,7 @@ export default function (sentences) {
           name: "producto",
           as: "id_producto_producto",
           required: true,
-          select: ["nombre", "precio", "categoria", "stock", "codigo"],
+          select: ["nombre", "precio", "categoria", "stock", "codigo", "id"],
           where: {},
           include: [
             {
@@ -212,6 +212,7 @@ export default function (sentences) {
         id: item.id,
         num_venta: item.num_venta,
         codigo: item["id_producto_producto.codigo"],
+        id_producto: item["id_producto_producto.id"],
         producto: item["id_producto_producto.nombre"],
         precio_unidad: "$" + item["id_producto_producto.precio"],
         cantidad: item.cantidad,
@@ -278,14 +279,32 @@ export default function (sentences) {
   }
 
   async function cambiarEstadoPedido(data) {
-    let { id, transferencia, id_estado } = data;
+    let { id, transferencia, id_estado, num_venta, num_pedido } = data;
 
-    return await sentences.update(
+    await sentences.update(
       "db-novedades",
       "resumen_orden",
       { id_estado, transferencia },
       { id }
     );
+
+    if (id_estado === 2) {
+      let pedidos = await getPedidoDetalle({ num_venta });
+
+      for (let item of pedidos) {
+        let { cantidad: cantidadMenos, id_producto } = item;
+
+        await sentences.update(
+          "db-novedades",
+          "producto",
+          {
+            cantidad: Sequelize.literal(`producto.cantidad - ${cantidadMenos}`),
+          },
+          { id: id_producto }
+        );
+      }
+    }
+    return;
   }
 
   return {
