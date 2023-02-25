@@ -228,9 +228,53 @@ export default function (sentences) {
   }
 
   async function cambiarEstadoPedidoDetalle({ id, estado }) {
-    console.log(estado);
-    console.log(id);
-    return await sentences.update("db-novedades", "orden", { estado }, { id });
+    const cambio = await sentences.update(
+      "db-novedades",
+      "orden",
+      { estado },
+      { id }
+    );
+
+    const datosPadre = await sentences.selectJoin(
+      "db-novedades",
+      "resumen_orden",
+      [
+        Sequelize.literal("resumen_orden.id as id_orden"),
+        "total",
+        "subtotal",
+        "total_pedido",
+      ],
+      {},
+      [
+        {
+          name: "orden",
+          as: "ordens",
+          required: true,
+          sourceKey: "num_venta",
+          select: ["*"],
+          where: { id },
+        },
+      ],
+      true
+    );
+
+    let { id_orden, total, subtotal, total_pedido, total_producto } =
+      datosPadre[0];
+
+    let totalPedido = estado ? total_pedido + 1 : total_pedido - 1;
+    let totalCosto = estado ? total + total_producto : total - total_producto;
+
+    let data = {
+      total_pedido: totalPedido,
+      estado: totalPedido === 0 ? false : true,
+      total: Number(totalCosto.toFixed(2)),
+    };
+
+    await sentences.update("db-novedades", "resumen_orden", data, {
+      id: id_orden,
+    });
+
+    return cambio;
   }
 
   async function cambiarEstadoPedido(data) {
