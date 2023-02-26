@@ -18,41 +18,43 @@ export default function (sentences) {
       estado: true,
     };
 
-    const usuario = await sentences.select(
-      "db-novedades",
-      "cliente",
-      ["nombre", "cedula", "contrasena", "id_rol"],
-      where
-    );
+    try {
+      const usuario = await sentences.select(
+        "db-novedades",
+        "persona",
+        ["nombre", "cedula", "contrasena", "id_rol"],
+        where
+      );
 
-    if (usuario.length !== 0) {
-      let isValid = await bcryptjs.compare(pass, usuario[0].contrasena);
+      if (usuario.length !== 0) {
+        let isValid = await bcryptjs.compare(pass, usuario[0].contrasena);
 
-      if (!isValid) return [];
+        if (!isValid) return [];
 
-      return [
-        {
-          nombre: usuario[0].nombre,
-          cedula: usuario[0].cedula,
-          permisos: usuario[0].id_rol,
-        },
-      ];
+        return [
+          {
+            nombre: usuario[0].nombre,
+            cedula: usuario[0].cedula,
+            permisos: usuario[0].id_rol,
+          },
+        ];
+      }
+    } catch (err) {
+      throw new error("Problema con el inicio");
     }
-
-    return [];
   }
 
   async function registroCliente(data) {
     const existe = await sentences.select(
       "db-novedades",
-      "cliente",
+      "persona",
       ["nombre", "cedula"],
       {
         cedula: data.cedula,
       }
     );
 
-    console.log(existe)
+    console.log(existe);
 
     if (existe.length !== 0)
       throw error("El número de cédula ya cuenta con un registro");
@@ -61,14 +63,14 @@ export default function (sentences) {
     const salt = await bcryptjs.genSalt();
     data.contrasena = await bcryptjs.hash(data.contrasena, salt);
 
-    await sentences.insert("db-novedades", "cliente", {
+    await sentences.insert("db-novedades", "persona", {
       ...data,
       id_rol: 3,
     });
 
     const datosLogin = await sentences.select(
       "db-novedades",
-      "cliente",
+      "persona",
       ["nombre", "cedula", Sequelize.literal("id_rol as permisos")],
       {
         cedula: data.cedula,
@@ -83,7 +85,7 @@ export default function (sentences) {
 
   async function AccesoMenu({ cedula }) {
     return await sentences
-      .select("db-novedades", "cliente", ["id_rol"], {
+      .select("db-novedades", "persona", ["id_rol"], {
         cedula,
         id_rol: { [Op.in]: ["1", "2"] },
       })

@@ -6,7 +6,7 @@ import { error } from "../connection/error.js";
 
 export default function (sentences) {
   async function buscarDatos({ numIdent }) {
-    let datos = await sentences.select("db-novedades", "cliente", ["*"], {
+    let datos = await sentences.select("db-novedades", "persona", ["*"], {
       cedula: numIdent,
     });
 
@@ -34,7 +34,7 @@ export default function (sentences) {
 
     const update = await sentences.update(
       "db-novedades",
-      "cliente",
+      "persona",
       { ...data },
       {
         id,
@@ -48,7 +48,7 @@ export default function (sentences) {
   async function buscarDatosEmpleados(data) {
     return await sentences.select(
       "db-novedades",
-      "cliente",
+      "persona",
       ["id", "cedula", "nombre", "apellido", "estado"],
       {
         id_rol: 2,
@@ -60,7 +60,7 @@ export default function (sentences) {
     if (id === 1)
       throw error("Este usuario no puede registrarse como empleado");
 
-    const existe = await sentences.select("db-novedades", "cliente", ["id"], {
+    const existe = await sentences.select("db-novedades", "persona", ["id"], {
       id_rol: 2,
       id,
     });
@@ -69,7 +69,7 @@ export default function (sentences) {
 
     return await sentences.update(
       "db-novedades",
-      "cliente",
+      "persona",
       { id_rol: 2 },
       { id }
     );
@@ -78,7 +78,7 @@ export default function (sentences) {
   async function cambiarEstado({ id, estado }) {
     return await sentences.update(
       "db-novedades",
-      "cliente",
+      "persona",
       { estado },
       { id }
     );

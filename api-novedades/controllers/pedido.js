@@ -79,7 +79,7 @@ export default function (sentences) {
           where: {},
           include: [
             {
-              name: "cliente",
+              name: "persona",
               as: "id_cliente_cliente",
               required: true,
               select: ["id", "cedula", "nombre", "apellido"],
@@ -138,7 +138,7 @@ export default function (sentences) {
           where: filtroPedido,
           include: [
             {
-              name: "cliente",
+              name: "persona",
               as: "id_cliente_cliente",
               required: true,
               select: ["id", "cedula", "nombre", "apellido"],
