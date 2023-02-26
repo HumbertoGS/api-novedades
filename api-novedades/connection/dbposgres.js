@@ -57,7 +57,8 @@ export default function store(name) {
     where = {},
     joinTables = [],
     raw = false,
-    order = []
+    order = [],
+    group = []
   ) {
     const Models = await getSchema(schema);
     let config = {};
@@ -66,6 +67,7 @@ export default function store(name) {
     if (where) config["where"] = where;
     config["raw"] = raw;
     config["order"] = order;
+    config["group"] = group;
     function tree(tables, tablesIncludes) {
       tables.forEach((table) => {
         let properties = {
@@ -75,6 +77,7 @@ export default function store(name) {
           attributes: table.select,
           where: table.where ?? {},
           order: table.order ?? [],
+          group: table.group ?? [],
         };
         if (table.include != undefined) {
           properties.include = [];
