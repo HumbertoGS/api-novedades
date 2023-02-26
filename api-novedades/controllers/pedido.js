@@ -302,6 +302,15 @@ export default function (sentences) {
           },
           { id: id_producto }
         );
+
+        await sentences.update(
+          "db-novedades",
+          "producto",
+          {
+            stock: false,
+          },
+          { cantidad: 0 }
+        );
       }
     }
     return;
