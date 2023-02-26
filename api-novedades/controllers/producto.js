@@ -181,13 +181,13 @@ export default function (sentences) {
     );
   }
 
-  async function inventario({ fechaDesde, fechaHasta }) {
+  async function reporte({ fechaDesde, fechaHasta }) {
     let filtro = {};
 
     if (fechaDesde && fechaHasta)
       filtro.fecha_registro = { [Op.between]: [fechaDesde, fechaHasta] };
 
-    const inventario = await sentences.select(
+    const reporte = await sentences.select(
       "db-novedades",
       "producto",
       [
@@ -207,8 +207,8 @@ export default function (sentences) {
       [["id", "DESC"]]
     );
 
-    return inventario;
+    return reporte;
   }
 
-  return { get, insert, cambiarEstado, inventario };
+  return { get, insert, cambiarEstado, reporte };
 }

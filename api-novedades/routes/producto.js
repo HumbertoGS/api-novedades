@@ -28,8 +28,8 @@ router.post("/insert", function (req, res, next) {
     .catch(next);
 });
 
-router.post("/inventario", function (req, res, next) {
-  Controller.inventario(req.body)
+router.post("/reporte", function (req, res, next) {
+  Controller.reporte(req.body)
     .then((data) => {
       response.success(req, res, data, 200);
     })
