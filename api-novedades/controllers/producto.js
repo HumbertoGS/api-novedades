@@ -187,27 +187,23 @@ export default function (sentences) {
     if (fechaDesde && fechaHasta)
       filtro.fecha_registro = { [Op.between]: [fechaDesde, fechaHasta] };
 
-    const inventario = await sentences.selectJoin(
+    const inventario = await sentences.select(
       "db-novedades",
       "producto",
-      ["codigo", "nombre", "precio", "categoria", "cantidad", "stock"],
-      filtro,
       [
-        {
-          name: "categoria",
-          as: "categoria_categorium",
-          required: true,
-          select: [
-            Sequelize.literal(
-              "categoria_categorium.nombre as nombre_categoria"
-            ),
-          ],
-          where: {
-            // estado: true
-          },
-        },
+        "codigo",
+        "nombre",
+        "precio",
+        "categoria",
+        "cantidad",
+        "stock",
+        Sequelize.literal(`(
+          select count(id_producto) as vendido from orden
+          where orden.id_producto = producto.id
+          )`),
+        "fecha_registro",
       ],
-      true,
+      filtro,
       [["id", "DESC"]]
     );
 
