@@ -183,9 +183,18 @@ export default function (sentences) {
 
   async function reporte({ fechaDesde, fechaHasta }) {
     let filtro = {};
+    let queryProductoVendidos = " group by p.nombre, id_producto, p.id;";
+    let queryCategoriaVendidos = " and p.categoria =  c.id ";
 
-    if (fechaDesde && fechaHasta)
+    if (fechaDesde && fechaHasta) {
       filtro.fecha_registro = { [Op.between]: [fechaDesde, fechaHasta] };
+      queryProductoVendidos =
+        `and orden.fecha_registro between '${fechaDesde}' and '${fechaHasta}'` +
+        queryProductoVendidos;
+      queryCategoriaVendidos =
+        `and orden.fecha_registro between '${fechaDesde}' and '${fechaHasta}'` +
+        queryCategoriaVendidos;
+    }
 
     const reporte = await sentences.select(
       "db-novedades",
@@ -207,7 +216,50 @@ export default function (sentences) {
       [["id", "DESC"]]
     );
 
-    return reporte;
+    const producto_vendidos = await sentences.rawQuery(`
+        select p.nombre, id_producto, count(id_producto) as conteo,
+          (
+            select orden.fecha_registro from orden
+            where orden.id_producto = p.id limit 1
+          )
+        from orden
+        inner join producto p on p.id = orden.id_producto
+        ${queryProductoVendidos}
+      `);
+
+    const categoria_vendidos = await sentences.rawQuery(`
+      select c.nombre, (
+      select  count(p.categoria) as conteo from orden
+      inner join producto p on p.id = orden.id_producto
+      ${queryCategoriaVendidos}
+      ) from categoria c 
+    `);
+
+    let datosProducto = producto_vendidos.map((item) => {
+      return {
+        name: item.nombre,
+        id_producto: item.id_producto,
+        conteo: Number(item.conteo),
+      };
+    });
+
+    let datosCategoria = categoria_vendidos.map((item) => {
+      return {
+        subject: item.nombre,
+        conteo: Number(item.conteo),
+        fullMark: 150,
+      };
+    });
+
+    let datosProductoCantidad = reporte.map((item) => {
+      return {
+        ...item,
+        disponible: Number(item.cantidad),
+        vendido: Number(item.vendido),
+      };
+    });
+
+    return { datosProductoCantidad, datosCategoria, datosProducto };
   }
 
   return { get, insert, cambiarEstado, reporte };
