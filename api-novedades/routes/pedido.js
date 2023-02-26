@@ -56,4 +56,12 @@ router.post("/detalle/cambiarEstado", function (req, res, next) {
     .catch(next);
 });
 
+router.get("/estadisticas", function (req, res, next) {
+  Controller.estadistica()
+    .then((data) => {
+      response.success(req, res, data, 200);
+    })
+    .catch(next);
+});
+
 export default router;
