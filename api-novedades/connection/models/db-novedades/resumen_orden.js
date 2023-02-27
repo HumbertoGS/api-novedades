@@ -28,7 +28,7 @@ export default class resumen_orden extends Model {
       allowNull: false,
       defaultValue: true
     },
-    fecha_creacion: {
+    fecha_registro: {
       type: DataTypes.DATE,
       allowNull: true,
       defaultValue: Sequelize.Sequelize.literal('CURRENT_TIMESTAMP')
