@@ -1,9 +1,6 @@
 //Dependencias
 import { Sequelize, Op } from "sequelize";
 //Modulos
-// import store from "../Connection/dbposgres.js";
-
-// const sentences = store();
 
 //Constantes
 
@@ -59,62 +56,6 @@ export default function (sentences) {
         { name: "Total", totales: totales.total },
       ],
     };
-  }
-
-  async function getPedido() {
-    const pedido = await sentences.selectJoin(
-      "db-novedades",
-      "resumen_orden",
-      ["*"],
-      {
-        id_estado: 1,
-      },
-      [
-        {
-          name: "orden",
-          as: "ordens",
-          required: true,
-          sourceKey: "num_venta",
-          select: ["id_cliente", "num_venta"],
-          where: {},
-          include: [
-            {
-              name: "persona",
-              as: "id_cliente_persona",
-              required: true,
-              select: ["id", "cedula", "nombre", "apellido"],
-              where: {},
-            },
-          ],
-        },
-      ],
-      true,
-      [["fecha_registro", "DESC"]]
-    );
-
-    let repetido = 0;
-
-    let datos = [];
-    pedido.map((item) => {
-      if (repetido !== item.num_venta) {
-        datos.push({
-          id: item.id,
-          num_pedido: item.num_venta,
-          num_producto: item.total_pedido,
-          total: "$" + item.total,
-          transferencia: item.transferencia,
-          status: item.id_estado,
-          estado: item.estado,
-          cambio_estado: item.estado,
-          id_cliente: item["ordens.id_cliente"],
-          num_identificacion: item["ordens.id_cliente_persona.cedula"],
-          nombre_completo: `${item["ordens.id_cliente_persona.apellido"]} ${item["ordens.id_cliente_persona.nombre"]}`,
-        });
-      }
-      repetido = item.num_venta;
-    });
-
-    return datos;
   }
 
   async function buscarPedido({ status, num_pedido, num_ident }) {
@@ -334,91 +275,11 @@ export default function (sentences) {
     return actualizado;
   }
 
-  async function estadistica() {
-    // const producto_vendidos = await sentences.selectJoin(
-    //   "db-novedades",
-    //   "orden",
-    //   ["id_producto", Sequelize.literal("count(orden.id_producto) as conteo")],
-    //   {},
-    //   [
-    //     {
-    //       name: "producto",
-    //       as: "id_producto_producto",
-    //       required: true,
-    //       select: ["nombre"],
-    //       where: {},
-    //     },
-    //   ],
-    //   true,
-    //   [],
-    //   ["id_producto", "id_producto_producto.nombre"]
-    // );
-
-    const producto_vendidos = await sentences.rawQuery(`
-        select p.nombre, id_producto, count(id_producto) as conteo,
-          (
-            select orden.fecha_registro from orden
-            where orden.id_producto = p.id limit 1
-          )
-        from orden
-        inner join producto p on p.id = orden.id_producto
-        group by p.nombre, id_producto, p.id;
-      `);
-
-    const producto_cantidad = await sentences.rawQuery(`
-        select p.nombre,
-          (
-            select count(id_producto) as conteo from orden
-            where orden.id_producto = p.id
-          ),
-        p.cantidad from producto p;
-      `);
-
-    const categoria_vendidos = await sentences.rawQuery(`
-        select c.nombre, (
-        select  count(p.categoria) as conteo from orden
-        inner join producto p on p.id = orden.id_producto
-        and p.categoria =  c.id
-        ) from categoria c 
-      `);
-
-    let datosProducto = producto_vendidos.map((item) => {
-      return {
-        // name: item["id_producto_producto.nombre"],
-        name: item.nombre,
-        id_producto: item.id_producto,
-        conteo: Number(item.conteo),
-      };
-    });
-
-    let datosProductoCantidad = producto_cantidad.map((item) => {
-      return {
-        name: item.nombre,
-        vendido: Number(item.conteo),
-        disponible: Number(item.cantidad),
-      };
-    });
-
-    let datosCategoria = categoria_vendidos.map((item) => {
-      return {
-        subject: item.nombre,
-        conteo: Number(item.conteo),
-        fullMark: 150,
-      };
-    });
-
-    console.log(datosProductoCantidad);
-
-    return { datosProducto, datosCategoria, datosProductoCantidad };
-  }
-
   return {
     insert,
-    getPedido,
     buscarPedido,
     getPedidoDetalle,
     cambiarEstadoPedidoDetalle,
     cambiarEstadoPedido,
-    estadistica,
   };
 }
