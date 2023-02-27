@@ -165,6 +165,7 @@ export default function (sentences) {
           status: item.id_estado,
           estado: item.estado,
           fecha_registro: item.fecha_registro,
+          id_empleado: item.persona_registro,
           cambio_estado: item.estado,
           id_cliente: item["ordens.id_cliente"],
           num_identificacion: item["ordens.id_cliente_persona.cedula"],
