@@ -298,7 +298,7 @@ export default function (sentences) {
       }
     );
 
-    await sentences.update(
+    const actualizado = await sentences.update(
       "db-novedades",
       "resumen_orden",
       { id_estado, transferencia, persona_registro: id_persona },
@@ -330,7 +330,8 @@ export default function (sentences) {
         );
       }
     }
-    return;
+
+    return actualizado;
   }
 
   async function estadistica() {
