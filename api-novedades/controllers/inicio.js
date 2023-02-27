@@ -44,7 +44,7 @@ export default function (sentences) {
     }
   }
 
-  async function registroCliente(data) {
+  async function registroPersona(data) {
     const existe = await sentences.select(
       "db-novedades",
       "persona",
@@ -92,5 +92,5 @@ export default function (sentences) {
       .then((item) => (item.length !== 0 ? true : false));
   }
 
-  return { LoginNegocio, AccesoMenu, registroCliente };
+  return { LoginNegocio, AccesoMenu, registroPersona };
 }

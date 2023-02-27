@@ -16,7 +16,7 @@ router.post("/login", function (req, res, next) {
 });
 
 router.post("/registro", function (req, res, next) {
-  Controller.registroCliente(req.body)
+  Controller.registroPersona(req.body)
     .then((data) => {
       response.success(req, res, data.datos, 200, data.message);
     })
