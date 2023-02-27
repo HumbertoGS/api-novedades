@@ -92,7 +92,6 @@ export default function (sentences) {
   }
 
   async function insert(datos) {
-    let imageData;
     let nameFile;
     let id = null;
     let codigo = "1";
@@ -134,15 +133,9 @@ export default function (sentences) {
       const base64Data = separacion[separacion.length - 1];
       const MyImage = Buffer.from(base64Data, "base64");
 
-      // const MyImage = data.file.buffer;
-      // let extension = data.file.mimetype.split("/");
-      // extension = extension[1];
-
       const ImageBuf = await sharp(MyImage)
         .toFormat(extension, { quality: 70 })
         .toBuffer();
-
-      // imageData = await sharp(ImageBuf).metadata();
 
       nameFile = generateUUID();
 
@@ -167,7 +160,6 @@ export default function (sentences) {
     } else {
       //SE INSERTA
       return await sentences.insert("db-novedades", "producto", datos);
-      return;
       console.log(`data:image/png;base64,${ImageBuf.toString("base64")}`);
     }
   }
