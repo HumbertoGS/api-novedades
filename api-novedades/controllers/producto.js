@@ -45,13 +45,16 @@ export default function (sentences) {
     return "0".repeat(zerosToAdd) + str;
   }
 
-  async function get({ stock }) {
+  async function get({ stock, nombre }) {
     const fechaFin = new Date();
     const fechaInicio = restarDias(new Date());
 
     let filtro = {};
 
     if (stock) filtro.stock = stock;
+    if (nombre) filtro = { ...filtro, nombre: { [Op.iLike]: `%${nombre}%` } };
+
+    console.log(filtro)
 
     let datos = await sentences.selectJoin(
       "db-novedades",
