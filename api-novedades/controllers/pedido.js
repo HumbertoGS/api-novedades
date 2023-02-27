@@ -164,7 +164,7 @@ export default function (sentences) {
           transferencia: item.transferencia,
           status: item.id_estado,
           estado: item.estado,
-          fecha_registro: item.fecha_registro.toLocaleDateString(),
+          fecha_registro: item.fecha_registro,
           cambio_estado: item.estado,
           id_cliente: item["ordens.id_cliente"],
           num_identificacion: item["ordens.id_cliente_persona.cedula"],
@@ -279,12 +279,28 @@ export default function (sentences) {
   }
 
   async function cambiarEstadoPedido(data) {
-    let { id, transferencia, id_estado, num_venta, num_pedido } = data;
+    let {
+      id,
+      transferencia,
+      id_estado,
+      num_venta,
+      num_pedido,
+      persona_registro,
+    } = data;
+
+    const [{ id: id_persona }] = await sentences.select(
+      "db-novedades",
+      "persona",
+      ["id"],
+      {
+        cedula: persona_registro,
+      }
+    );
 
     await sentences.update(
       "db-novedades",
       "resumen_orden",
-      { id_estado, transferencia },
+      { id_estado, transferencia, persona_registro: id_persona },
       { id }
     );
 
