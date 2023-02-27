@@ -45,7 +45,7 @@ export default function (sentences) {
     return [];
   }
 
-  async function buscarDatosEmpleados(data) {
+  async function buscarDatosEmpleados() {
     return await sentences.select(
       "db-novedades",
       "persona",
