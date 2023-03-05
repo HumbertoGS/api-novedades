@@ -17,7 +17,15 @@ router.get("/", function (req, res, next) {
       response.success(req, res, data, 200);
     })
     .catch(next);
-});
+})
+
+router.post("/", function (req, res, next) {
+  Controller.consultaDatos(req.body)
+    .then((data) => {
+      response.success(req, res, data, 200);
+    })
+    .catch(next);
+})
 
 // router.post("/insert", upload.single("imagen"), function (req, res, next) {
 router.post("/insert", function (req, res, next) {
