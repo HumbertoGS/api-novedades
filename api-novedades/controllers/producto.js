@@ -45,17 +45,13 @@ export default function (sentences) {
     return "0".repeat(zerosToAdd) + str;
   }
 
-  async function get({ stock, nombre, talla }) {
+  async function get({ stock }) {
     const fechaFin = new Date();
     const fechaInicio = restarDias(new Date());
 
     let filtro = {};
 
     if (stock) filtro.stock = stock;
-    if (talla) filtro = { ...filtro, talla: { [Op.iLike]: `%${talla}%` } };
-    if (nombre) filtro = { ...filtro, nombre: { [Op.iLike]: `%${nombre}%` } };
-
-    console.log(filtro);
 
     let datos = await sentences.selectJoin(
       "db-novedades",
@@ -84,6 +80,7 @@ export default function (sentences) {
     datos = datos.map((item) => {
       return {
         ...item,
+        talla: item.talla.split(", "),
         newProducto: validarFechaEnRango(
           fechaInicio,
           fechaFin.getTime(),
@@ -92,7 +89,71 @@ export default function (sentences) {
       };
     });
 
-    return datos;
+    let tallas = datos.map((item) => item.talla);
+
+    return { datos, tallas } ?? [];
+  }
+
+  async function consultaDatos({ categoria, orden, tallas, stock }) {
+    const fechaFin = new Date();
+    const fechaInicio = restarDias(new Date());
+
+    let ordens = ["id", "DESC"];
+
+    let filtroCategoria = {};
+
+    if (categoria.id.length !== 0)
+      filtroCategoria.id = { [Op.in]: categoria.id };
+    if (orden.orden.length !== 0) ordens = orden.orden;
+
+    let datos = await sentences.selectJoin(
+      "db-novedades",
+      "producto",
+      ["*"],
+      { stock },
+      [
+        {
+          name: "categoria",
+          as: "categoria_categorium",
+          required: true,
+          select: [
+            Sequelize.literal(
+              "categoria_categorium.nombre as nombre_categoria"
+            ),
+          ],
+          where: filtroCategoria,
+        },
+      ],
+      true,
+      [ordens]
+    );
+
+    datos = datos.map((item) => {
+      return {
+        ...item,
+        talla: item.talla.split(", "),
+        newProducto: validarFechaEnRango(
+          fechaInicio,
+          fechaFin.getTime(),
+          new Date(item.fecha_registro).getTime()
+        ),
+      };
+    });
+
+    let tallasProducto = datos.map((item) => item.talla);
+
+    if (tallas.tallas.length !== 0) {
+      const datosFiltrados = datos.filter((producto) => {
+        const tallasProducto = producto.talla.map((t) => t.toLowerCase());
+        return tallas.tallas.some((t) =>
+          tallasProducto.includes(t.toLowerCase())
+        );
+      });
+
+      datos = datosFiltrados;
+    }
+
+    return { datos, tallas: tallasProducto } ?? [];
   }
 
   async function insert(datos) {
@@ -258,5 +319,5 @@ export default function (sentences) {
     return { datosProductoCantidad, datosCategoria, datosProducto };
   }
 
-  return { get, insert, cambiarEstado, reporte };
+  return { get, consultaDatos, insert, cambiarEstado, reporte };
 }
