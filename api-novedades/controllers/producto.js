@@ -94,23 +94,37 @@ export default function (sentences) {
     return { datos, tallas } ?? [];
   }
 
-  async function consultaDatos({ categoria, orden, tallas, stock }) {
+  async function consultaDatos({ categoria, orden, tallas, precio, stock }) {
     const fechaFin = new Date();
     const fechaInicio = restarDias(new Date());
 
     let ordens = ["id", "DESC"];
 
+    let filtroProducto = { stock };
     let filtroCategoria = {};
 
     if (categoria.id.length !== 0)
       filtroCategoria.id = { [Op.in]: categoria.id };
     if (orden.orden.length !== 0) ordens = orden.orden;
 
+    if (precio.min !== "" && precio.max !== "") {
+      filtroProducto.precio = {
+        [Op.between]: [Number(precio.min), Number(precio.max)],
+      };
+    } else {
+      if (precio.min) {
+        filtroProducto.precio = { [Op.gte]: Number(precio.min) };
+      }
+      if (precio.max) {
+        filtroProducto.precio = { [Op.lte]: Number(precio.max) };
+      }
+    }
+
     let datos = await sentences.selectJoin(
       "db-novedades",
       "producto",
       ["*"],
-      { stock },
+      filtroProducto,
       [
         {
           name: "categoria",
