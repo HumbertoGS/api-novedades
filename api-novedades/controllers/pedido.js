@@ -58,17 +58,26 @@ export default function (sentences) {
     };
   }
 
-  async function buscarPedido({ status, num_pedido, num_ident }) {
+  async function buscarPedido({
+    status,
+    num_pedido,
+    num_ident,
+    fechaDesde,
+    fechaHasta,
+  }) {
     let filtroPersona = num_ident ? { cedula: num_ident.trim() } : {};
     let filtroPedido = num_pedido ? { num_venta: Number(num_pedido) } : {};
+    let filtroOrden = { id_estado: Number(status) };
+
+    if (fechaDesde && fechaHasta) {
+      filtroOrden.fecha_registro = { [Op.between]: [fechaDesde, fechaHasta] };
+    }
 
     const pedido = await sentences.selectJoin(
       "db-novedades",
       "resumen_orden",
       ["*"],
-      {
-        id_estado: Number(status),
-      },
+      filtroOrden,
       [
         {
           name: "orden",
